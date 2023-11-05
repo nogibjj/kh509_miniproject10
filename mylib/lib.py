@@ -1,6 +1,5 @@
 from pyspark.sql import SparkSession
 
-
 def initialize_spark():
     """
     Initialize a SparkSession and return it.
@@ -10,14 +9,7 @@ def initialize_spark():
 
 
 def read_csv(spark, file_path):
-    """
-    Loads a large dataset and returns it.
-    Args:
-        spark (SparkSession): _description_
-        file_path (str): _description_
-    Returns:
-        DataFrame: Loaded dataset as a DataFrame.
-    """
+  
     df = spark.read.option("header", "true").csv(file_path)
     return df
 

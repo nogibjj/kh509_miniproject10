@@ -12,25 +12,25 @@ def main():
     spark = initialize_spark()
 
     # Step 2: Load the songs_normalize dataset
-    file_path = "songs_normalize.csv"
+    file_path = "dnd_chars_unique.tsv"
     songs_df = read_csv(spark, file_path)
 
     # Print out the DataFrame to verify if it's loaded correctly
     songs_df.show()
 
     # Step 3: Register DataFrame as a temporary SQL table/view
-    songs_df.createOrReplaceTempView("songs")
+    songs_df.createOrReplaceTempView("justClass")
 
     # Step 4: Perform a Spark SQL query
-    sql_query_string = "artist = 'Sam Smith'"
+    sql_query_string = "justClass = 'Human'"
     result_df = sql_query(songs_df, sql_query_string)
 
     # Print out the result DataFrame
     result_df.show()
 
     # Step 5: Perform data transformation
-    column_of_interest = "artist"
-    target_value = "Maroon 5"
+    column_of_interest = "level"
+    target_value = "1"
     transformed_df = perform_data_transformation(
         songs_df, column_of_interest, target_value
     )

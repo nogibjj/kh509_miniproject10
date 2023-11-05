@@ -1,92 +1,53 @@
-import os
-import requests
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import avg, col,count, when
-import sys
-from io import StringIO
-import contextlib
+from mylib.lib import (
+    initialize_spark,
+    read_csv,
+    sql_query,
+    perform_data_transformation,
+    save_summary_report,
+)
 
-@contextlib.contextmanager
-def capture_output():
-    new_stdout, new_stderr = StringIO(), StringIO()
-    old_stdout, old_stderr = sys.stdout, sys.stderr
-    try:
-        sys.stdout, sys.stderr = new_stdout, new_stderr
-        yield sys.stdout, sys.stderr
-    finally:
-        sys.stdout, sys.stderr = old_stdout, old_stderr
-
-
-def save_markdown(output, filename="output.md"):
-    with open(filename, "w") as f:
-        f.write("# PySpark Output\n\n")
-        f.write("```\n")
-        f.write(output)
-        f.write("\n```\n")
 
 def main():
-    # Initialize a Spark session
-    spark = SparkSession.builder \
-        .appName("Obesity Data Analysis") \
-        .master("local[*]") \
-        .getOrCreate()
-   
-    # Load the data into a DataFrame
-    df = spark.read.csv('data/ObesityDataSet.csv', header=True, inferSchema=True)
+    # Step 1: Initializing the spark connection
+    spark = initialize_spark()
 
-    # Register the DataFrame as a SQL temporary view
-    df.createOrReplaceTempView("obesity_data")
+    # Step 2: Load the songs_normalize dataset
+    file_path = "songs_normalize.csv"
+    songs_df = read_csv(spark, file_path)
 
-    # Use Spark SQL to filter the data where Age > 30 and Weight < 70
-    filtered_data = spark.sql("""
-    SELECT *
-    FROM obesity_data
-    WHERE Age > 30 AND Weight < 70
-    """)
+    # Print out the DataFrame to verify if it's loaded correctly
+    songs_df.show()
 
-    # Use Spark SQL to calculate the percentage of people who smoke
-    smoke_count = spark.sql("""
-    SELECT COUNT(*) as count
-    FROM obesity_data
-    WHERE SMOKE = 'yes'
-    """).first().count
+    # Step 3: Register DataFrame as a temporary SQL table/view
+    songs_df.createOrReplaceTempView("songs")
 
-    total_count = spark.sql("""
-    SELECT COUNT(*) as count
-    FROM obesity_data
-    """).first().count
+    # Step 4: Perform a Spark SQL query
+    sql_query_string = "artist = 'Sam Smith'"
+    result_df = sql_query(songs_df, sql_query_string)
 
-    # Use Spark SQL to calculate the average of Age, Height, and Weight
-    averages = spark.sql("""
-    SELECT AVG(Age) as avg_age, AVG(Height) as avg_height, AVG(Weight) as avg_weight
-    FROM obesity_data
-    """)
-   
-    # Filter the data where Age > 30 and Weight < 70
-    filtered_data = df.filter((df.Age > 30) & (df.Weight < 70))
+    # Print out the result DataFrame
+    result_df.show()
 
-    # Calculate the percentage of people who smoke
-    smoke_percentage = filtered_data.filter(df.SMOKE == 'yes').count() / filtered_data.count() * 100
+    # Step 5: Perform data transformation
+    column_of_interest = "artist"
+    target_value = "Maroon 5"
+    transformed_df = perform_data_transformation(
+        songs_df, column_of_interest, target_value
+    )
 
-    # Count the number of females and males
-    gender_counts = df.groupBy("Gender").count()
+    # Combine the results into the report_content
+    report_content = "SQL Query Result:\n"
+    report_content += f"Number of rows: {result_df.count()}\n\n"
+    report_content += "Transformed DataFrame:\n"
+    report_content += f"Number of rows: {transformed_df.count()}\n"
 
-    # Capture the output
-    with capture_output() as (out, err):
-        # Show the DataFrame schema to verify correct data types
-        df.printSchema()
+    # Step 6: Save summary report
+    report_file_path = "report.txt"
+    save_summary_report(report_content, report_file_path)
 
-        # Show the percentage of people who smoke
-        print(f"Percentage of people who smoke: {smoke_percentage}%")
+    # Display the result DataFrame
+    transformed_df.show()
 
-        # Show the number of females and males
-        gender_counts.show()
 
-    # Save the output to markdown
-    save_markdown(out.getvalue())
-
-    # Stop the Spark session
-    spark.stop()
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

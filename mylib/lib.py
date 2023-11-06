@@ -9,7 +9,8 @@ def initialize_spark():
 
 
 def read_tsv(spark, file_path):
-    df = spark.read.option("header", "true").option("delimiter", "\t").csv(file_path)
+  
+    df = spark.read.option("header", "true").tsv(file_path)
     return df
 
 

@@ -1,5 +1,5 @@
 # Mini Project 10: Pyspark Data Processing
-#### Katelyn Hucker (kh509)
+#### Katelyn Hucker (kh509) [![passing](https://github.com/nogibjj/kh509_miniproject10/actions/workflows/cicd.yml/badge.svg)](https://github.com/nogibjj/kh509_miniproject10/actions/workflows/cicd.yml)
 The requirements of this project were: 
   - Use PySpark to perform data processing on a large dataset
   - Include at least one Spark SQL query and one data transformation

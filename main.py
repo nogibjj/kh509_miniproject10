@@ -1,6 +1,6 @@
 from mylib.lib import (
     initialize_spark,
-    read_csv,
+    read_tsv,
     sql_query,
     perform_data_transformation,
     save_summary_report,
@@ -13,16 +13,16 @@ def main():
 
     # Step 2: Load the songs_normalize dataset
     file_path = "dnd_chars_unique.tsv"
-    songs_df = read_csv(spark, file_path)
+    songs_df = read_tsv(spark, file_path)
 
     # Print out the DataFrame to verify if it's loaded correctly
     songs_df.show()
 
     # Step 3: Register DataFrame as a temporary SQL table/view
-    songs_df.createOrReplaceTempView("justClass")
+    songs_df.createOrReplaceTempView("alignment")
 
     # Step 4: Perform a Spark SQL query
-    sql_query_string = "justClass = 'Human'"
+    sql_query_string = "alignment = 'CG'"
     result_df = sql_query(songs_df, sql_query_string)
 
     # Print out the result DataFrame

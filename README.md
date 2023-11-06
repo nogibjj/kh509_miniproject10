@@ -1,8 +1,9 @@
-# python-template
-Mini-Project 1 
+# Mini Project 10: Pyspark Data Processing
+#### Katelyn Hucker (kh509)
 
-Fall 2023 IDS 706 Data Engineering
 
-Katelyn Hucker (kh509)
 
-This includes a Makefile, requirements.txt, .devcontainer, .gitignore, GitHubActions, and Readme.
+
+Here is the output of the processing happening:
+![image](https://github.com/nogibjj/kh509_miniproject10/assets/143521756/b604a9a6-0ff6-46b0-a635-9e8052ccb047)
+
